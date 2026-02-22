@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Sehlea.Api.Domain.Interfaces;
+using Sehlea.Api.Domain.Repositories;
 using Sehlea.Api.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +11,13 @@ builder.Services.AddDbContext<AppDbContext>(
 req => req.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultSqlServerConnection"))); //al momento de mandar a producción se debe
                                                                                //cambiar esto por una variable de ambiente
-                                                                               
+
+//interfaces to scoped
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
+builder.Services.AddScoped<IConsultasRepository, ConsultaRepository>();
+builder.Services.AddScoped<IEstudioMedicoRepository, EstudioMedicosRepository>();
+builder.Services.AddScoped<IResultadoEstudioRepository, ResultadoEstudioRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
