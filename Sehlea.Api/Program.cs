@@ -1,6 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using Sehlea.Api.Infrastructure.Persistence;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//dbContext
+builder.Services.AddDbContext<AppDbContext>(
+req => req.UseSqlServer(
+    builder.Configuration.GetConnectionString("DefaultSqlServerConnection"))); //al momento de mandar a producción se debe
+                                                                               //cambiar esto por una variable de ambiente
+                                                                               
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
