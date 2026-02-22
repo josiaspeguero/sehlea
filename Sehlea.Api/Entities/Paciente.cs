@@ -25,5 +25,14 @@
         public string TelefonoEmergencia { get; set; } = string.Empty;
 
         public DateTime FechaRegistro { get; set; } = DateTime.Now;
+
+        //propiedad de navegacion
+        //paciente
+        public int DoctorId { get; set; }
+        public Doctor Doctor { get; set; } = new(); //un paciente tiene un solo doctor de cabecera 
+        //consulta
+        public List<Consulta> Consultas { get; set; } = new(); //un paciente tiene varias consultas
+        //estudios
+        public List<EstudioMedico> Estudios { get; set; } = new();  // un paciente tiene varios estudios realizados
     }
 }

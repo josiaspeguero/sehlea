@@ -1,1 +1,5 @@
-<Solution />
+<Solution>
+  <Project Path="Sehlea.Api/Sehlea.Api.csproj" />
+  <Project Path="Sehlea.ClassLibrary/Sehlea.ClassLibrary.csproj" />
+  <Project Path="Sehlea.Front/Sehlea.Front.csproj" />
+</Solution>
