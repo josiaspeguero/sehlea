@@ -13,6 +13,10 @@ namespace Sehlea.Api.Domain.configurations
                 .WithMany(e => e.ResultadosEstudios)
                 .HasForeignKey(r => r.EstudioId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Property(r => r.ValorEncontrado).HasColumnType("decimal(16, 2)");
+            builder.Property(r => r.RangoValorMinimo).HasColumnType("decimal(16, 2)");
+            builder.Property(r => r.RangoValorMaximo).HasColumnType("decimal(16, 2)");
         }
     }
 }
