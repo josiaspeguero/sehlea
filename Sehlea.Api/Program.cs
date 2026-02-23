@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Sehlea.Api.Application.DTOs.Mapping;
+using Sehlea.Api.Application.UseCase;
 using Sehlea.Api.Domain.Interfaces;
 using Sehlea.Api.Domain.Repositories;
 using Sehlea.Api.Infrastructure.Persistence;
@@ -25,6 +26,10 @@ builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
 builder.Services.AddScoped<IConsultasRepository, ConsultaRepository>();
 builder.Services.AddScoped<IEstudioMedicoRepository, EstudioMedicosRepository>();
 builder.Services.AddScoped<IResultadoEstudioRepository, ResultadoEstudioRepository>();
+
+//useCase
+builder.Services.AddScoped<AgregarDoctor>();
+builder.Services.AddScoped<MostrarDoctores>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

@@ -1,23 +1,41 @@
-﻿using Sehlea.Api.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Sehlea.Api.Domain.Entities;
 using Sehlea.Api.Domain.Interfaces;
+using Sehlea.Api.Infrastructure.Persistence;
 
 namespace Sehlea.Api.Domain.Repositories
 {
     public class DoctorRepository : IDoctorRepository
     {
-        public Task AgregarDoctorAsync(Doctor doctor)
+        private readonly AppDbContext _appDbContext;
+
+        public DoctorRepository(AppDbContext appDbContext)
         {
-            throw new NotImplementedException();
+            _appDbContext = appDbContext;
+        }
+        public async Task AgregarDoctorAsync(Doctor doctor)
+        {
+            await _appDbContext.AddAsync(doctor);
         }
 
-        public Task<Doctor?> BuscarDoctorAsync(string dni)
+        public async Task<Doctor?> BuscarDoctorAsync(string dni)
         {
-            throw new NotImplementedException();
+            return await _appDbContext.Doctores.FirstOrDefaultAsync(d => d.Cedula == dni);
         }
 
-        public Task<bool> GuardarDoctorAsync()
+        public async Task<bool> GuardarDoctorAsync()
         {
-            throw new NotImplementedException();
+            var res = await _appDbContext.SaveChangesAsync();
+            if (res <= 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<IEnumerable<Doctor>> MostrarDoctoresAsync()
+        {
+            return await _appDbContext.Doctores.ToListAsync();
         }
     }
 }
