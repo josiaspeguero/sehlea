@@ -1,4 +1,5 @@
-﻿using Sehlea.Api.Domain.Entities;
+﻿using Sehlea.Api.Application.DTOs;
+using Sehlea.Api.Domain.Entities;
 
 namespace Sehlea.Api.Domain.Interfaces
 {
@@ -7,5 +8,6 @@ namespace Sehlea.Api.Domain.Interfaces
         Task AgregarPacienteAsync(Paciente paciente);
         Task<bool> GuardarPacienteAsync(); 
         Task<Paciente?> BuscarPacienteAsync(string dni);
+        Task<IEnumerable<PacienteDTO?>> MostrarPacientesAsync();
     }
 }

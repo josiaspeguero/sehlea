@@ -28,8 +28,12 @@ builder.Services.AddScoped<IEstudioMedicoRepository, EstudioMedicosRepository>()
 builder.Services.AddScoped<IResultadoEstudioRepository, ResultadoEstudioRepository>();
 
 //useCase
+//doctores
 builder.Services.AddScoped<AgregarDoctor>();
 builder.Services.AddScoped<MostrarDoctores>();
+//pacientes
+builder.Services.AddScoped<AgregarPaciente>();
+builder.Services.AddScoped<MostrarPacientes>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

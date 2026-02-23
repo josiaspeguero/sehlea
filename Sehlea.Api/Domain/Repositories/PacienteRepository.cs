@@ -1,23 +1,58 @@
-﻿using Sehlea.Api.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Sehlea.Api.Application.DTOs;
+using Sehlea.Api.Domain.Entities;
 using Sehlea.Api.Domain.Interfaces;
+using Sehlea.Api.Infrastructure.Persistence;
 
 namespace Sehlea.Api.Domain.Repositories
 {
     public class PacienteRepository : IPacienteRepository
     {
-        public Task AgregarPacienteAsync(Paciente paciente)
+        private readonly AppDbContext _appDbContext;
+
+        public PacienteRepository(AppDbContext appDbContext)
         {
-            throw new NotImplementedException();
+            _appDbContext = appDbContext;
+        }
+        public async Task AgregarPacienteAsync(Paciente paciente)
+        {
+            await _appDbContext.AddAsync(paciente);
         }
 
-        public Task<Paciente?> BuscarPacienteAsync(string dni)
+        public async Task<Paciente?> BuscarPacienteAsync(string dni)
         {
-            throw new NotImplementedException();
+            return await _appDbContext.Pacientes.FirstOrDefaultAsync(p => p.Cedula == dni);
         }
 
-        public Task<bool> GuardarPacienteAsync()
+        public async Task<bool> GuardarPacienteAsync()
         {
-            throw new NotImplementedException();
+            var res = await _appDbContext.SaveChangesAsync();
+            if (res <= 0)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<IEnumerable<PacienteDTO?>> MostrarPacientesAsync()
+        {
+            var pacientes = await _appDbContext.Pacientes.Select(p => new PacienteDTO
+            {
+                Nombre = p.Nombre,
+                Apellido = p.Apellido,
+                Email = p.Email,
+                Telefono = p.Telefono,
+                Direccion = p.Direccion,
+                Cedula = p.Cedula,
+                FechaNacimiento = p.FechaNacimiento,
+                Sexo = p.Sexo,
+                ContactoEmergencia = p.ContactoEmergencia,
+                TelefonoEmergencia = p.TelefonoEmergencia,
+                FechaRegistro = p.FechaRegistro,
+                DoctorId = p.DoctorId
+            }).ToListAsync();
+
+            return pacientes;
         }
     }
 }
