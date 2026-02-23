@@ -4,7 +4,7 @@ namespace Sehlea.Api.Domain.Interfaces
 {
     public interface IDoctorRepository
     {
-        Task AgregarDoctorAsync(Consulta consulta);
+        Task AgregarDoctorAsync(Doctor doctor);
         Task<bool> GuardarDoctorAsync();
         Task<Doctor?> BuscarDoctorAsync(string dni);
     }

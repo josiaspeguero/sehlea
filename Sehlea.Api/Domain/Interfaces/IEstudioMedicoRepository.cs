@@ -4,7 +4,7 @@ namespace Sehlea.Api.Domain.Interfaces
 {
     public interface IEstudioMedicoRepository
     {
-        Task AgregarEstudioMedicoAsync(Consulta consulta);
+        Task AgregarEstudioMedicoAsync(EstudioMedico estudioMedico);
         Task<bool> GuardarEstudioMedicoAsync();
         Task<EstudioMedico?> BuscarEstudioMedicoAsync(int id);
     }

@@ -5,7 +5,7 @@ namespace Sehlea.Api.Domain.Repositories
 {
     public class PacienteRepository : IPacienteRepository
     {
-        public Task AgregarPacienteAsync(Consulta consulta)
+        public Task AgregarPacienteAsync(Paciente paciente)
         {
             throw new NotImplementedException();
         }
