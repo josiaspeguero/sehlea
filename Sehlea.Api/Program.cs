@@ -34,6 +34,9 @@ builder.Services.AddScoped<MostrarDoctores>();
 //pacientes
 builder.Services.AddScoped<AgregarPaciente>();
 builder.Services.AddScoped<MostrarPacientes>();
+//consultas
+builder.Services.AddScoped<AgregarConsulta>();
+builder.Services.AddScoped<BuscarConsulta>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

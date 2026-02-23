@@ -1,23 +1,46 @@
-﻿using Sehlea.Api.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Sehlea.Api.Application.DTOs;
+using Sehlea.Api.Domain.Entities;
 using Sehlea.Api.Domain.Interfaces;
+using Sehlea.Api.Infrastructure.Persistence;
 
 namespace Sehlea.Api.Domain.Repositories
 {
     public class ConsultaRepository : IConsultasRepository
     {
-        public Task AgregarConsultaAsync(Consulta consulta)
+        private readonly AppDbContext _appDbContext;
+
+        public ConsultaRepository(AppDbContext appDbContext)
         {
-            throw new NotImplementedException();
+            _appDbContext = appDbContext;
+        }
+        public async Task AgregarConsultaAsync(Consulta consulta)
+        {
+            await _appDbContext.AddAsync(consulta);
         }
 
-        public Task<Consulta?> BuscarConsultaAsync(int id)
+        public async Task<ConsultaDTO?> BuscarConsultaAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _appDbContext.Consultas.Select(c => new ConsultaDTO
+            {
+                FechaConsulta = c.FechaConsulta,
+                RazonConsulta = c.RazonConsulta,
+                Tipo = c.Tipo,
+                Observaciones = c.Observaciones,
+                DoctorId = c.DoctorId,
+                PacienteId = c.PacienteId,
+                PrecioConsulta = c.PrecioConsulta
+            }).FirstOrDefaultAsync();
         }
 
-        public Task<bool> GuardarConsultaAsync()
+        public async Task<bool> GuardarConsultaAsync()
         {
-            throw new NotImplementedException();
+            var res = await _appDbContext.SaveChangesAsync();
+            if (res <= 0)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
