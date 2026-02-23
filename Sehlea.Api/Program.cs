@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Sehlea.Api.Application.DTOs.Mapping;
 using Sehlea.Api.Domain.Interfaces;
 using Sehlea.Api.Domain.Repositories;
 using Sehlea.Api.Infrastructure.Persistence;
@@ -11,6 +12,12 @@ builder.Services.AddDbContext<AppDbContext>(
 req => req.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultSqlServerConnection"))); //al momento de mandar a producción se debe
                                                                                //cambiar esto por una variable de ambiente
+
+//automapper profile
+builder.Services.AddAutoMapper(conf =>
+{
+    conf.AddProfile<AutoMapperProfile>();
+});
 
 //interfaces to scoped
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
