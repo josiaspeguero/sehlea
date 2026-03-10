@@ -6,6 +6,6 @@ namespace Sehlea.Api.Domain.Interfaces
     {
         Task AgregarEstudioMedicoAsync(EstudioMedico estudioMedico);
         Task<bool> GuardarEstudioMedicoAsync();
-        Task<EstudioMedico?> BuscarEstudioMedicoAsync(int id);
+        Task<EstudioMedico?> BuscarEstudioMedicoAsync(string cedula); //se buscara por cedula del paciente
     }
 }

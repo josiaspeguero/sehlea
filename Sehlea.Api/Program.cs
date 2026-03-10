@@ -37,8 +37,18 @@ builder.Services.AddScoped<MostrarPacientes>();
 //consultas
 builder.Services.AddScoped<AgregarConsulta>();
 builder.Services.AddScoped<BuscarConsulta>();
+//estudios-medicos
+builder.Services.AddScoped<ConsultarEstudioMedico>();
+builder.Services.AddScoped<AgregarEstudioMedico>();
+//resultados-estudios-medicos
+builder.Services.AddScoped<AgregarResultado>();
+builder.Services.AddScoped<ObtenerResultadosPorEstudio>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler =
+        System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 

@@ -1,4 +1,6 @@
-﻿namespace Sehlea.Api.Domain.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace Sehlea.Api.Domain.Entities
 {
     public class EstudioMedico
     {
@@ -19,6 +21,7 @@
         public Doctor Doctor { get; set; } = null!; //un estudio es realizado por un doctor
 
         //resultados
+        [JsonIgnore]
         public List<ResultadoEstudio> ResultadosEstudios { get; set; } = new(); //un estudio tiene varios resultados
 
     }

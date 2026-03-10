@@ -1,23 +1,38 @@
-﻿using Sehlea.Api.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Sehlea.Api.Domain.Entities;
 using Sehlea.Api.Domain.Interfaces;
+using Sehlea.Api.Infrastructure.Persistence;
 
 namespace Sehlea.Api.Domain.Repositories
 {
     public class EstudioMedicosRepository : IEstudioMedicoRepository
     {
-        public Task AgregarEstudioMedicoAsync(EstudioMedico estudioMedico)
+        private readonly AppDbContext _appDbContext;
+
+        public EstudioMedicosRepository(AppDbContext appDbContext)
         {
-            throw new NotImplementedException();
+            _appDbContext = appDbContext;
+        }
+        public async Task AgregarEstudioMedicoAsync(EstudioMedico estudioMedico)
+        {
+            await _appDbContext.AddAsync(estudioMedico);
         }
 
-        public Task<EstudioMedico?> BuscarEstudioMedicoAsync(int id)
+        public async Task<EstudioMedico?> BuscarEstudioMedicoAsync(string cedula)
         {
-            throw new NotImplementedException();
+            return await _appDbContext.EstudioMedicos
+          .Include(e => e.ResultadosEstudios)
+          .FirstOrDefaultAsync(e => e.Paciente.Cedula == cedula);
         }
 
-        public Task<bool> GuardarEstudioMedicoAsync()
+        public async Task<bool> GuardarEstudioMedicoAsync()
         {
-            throw new NotImplementedException();
+            var res = await _appDbContext.SaveChangesAsync();
+            if (res <= 0)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

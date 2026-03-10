@@ -7,5 +7,6 @@ namespace Sehlea.Api.Domain.Interfaces
         Task AgregarResultadoEstudioAsync(ResultadoEstudio resultadoEstudio);
         Task<bool> GuardarResultadoEstudioAsync(); //si el resultado es exitoso, devuelve true sin exponer lo que se guardó
         Task<ResultadoEstudio?> BuscarResultadoEstudioAsync(int id);
+        Task<List<ResultadoEstudio>> ObtenerResultadosPorEstudioIdAsync(int estudioId);
     }
 }
