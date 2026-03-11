@@ -1,6 +1,6 @@
 @inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider Theme="_theme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudPopoverProvider />
@@ -13,7 +13,7 @@
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Never" Elevation="2">
         <MudDrawerHeader>
-            <MudText Typo="Typo.h5">Sehlea</MudText>
+            <MudText Typo="Typo.h5" Color="Color.Primary">Sehlea</MudText>
         </MudDrawerHeader>
         <NavMenu />
     </MudDrawer>
@@ -26,6 +26,20 @@
 
 @code {
     bool _drawerOpen = true;
+    private MudTheme _theme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#0288D1", // Azul médico profesional
+            Secondary = "#009688", // Verde azulado (Teal)
+            AppbarBackground = "#0288D1", // Mismo azul para la barra superior
+            AppbarText = "#FFFFFF", // Texto blanco
+            DrawerBackground = "#FFFFFF", // Fondo blanco limpio
+            DrawerText = "#424242", // Texto oscuro
+            Background = "#F5F5F5", // Fondo gris muy claro
+            Surface = "#FFFFFF", // Superficies blancas
+        }
+    };
 
     void DrawerToggle()
     {
