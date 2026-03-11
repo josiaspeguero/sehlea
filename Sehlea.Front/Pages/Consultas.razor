@@ -1,0 +1,52 @@
+@page "/consultas"
+@using Sehlea.Front.Components
+@using Sehlea.Front.Models
+@using Sehlea.Front.Services
+@inject IConsultaService ConsultaService
+@inject IDialogService DialogService
+
+<MudText Typo="Typo.h4" GutterBottom="true">Próximas Consultas</MudText>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="AddConsulta" Class="mb-4">Agregar Consulta</MudButton>
+
+<MudTable Items="@_consultas" Dense="true" Hover="true" Striped="true">
+    <HeaderContent>
+        <MudTh>Fecha</MudTh>
+        <MudTh>Tipo</MudTh>
+        <MudTh>Paciente ID</MudTh>
+        <MudTh>Razón</MudTh>
+        <MudTh>Precio</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Fecha">@context.FechaConsulta</MudTd>
+        <MudTd DataLabel="Tipo">@context.Tipo</MudTd>
+        <MudTd DataLabel="Paciente ID">@context.PacienteId</MudTd>
+        <MudTd DataLabel="Razón">@context.RazonConsulta</MudTd>
+        <MudTd DataLabel="Precio">@context.PrecioConsulta</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    private List<Consulta> _consultas = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadConsultas();
+    }
+
+    private async Task LoadConsultas()
+    {
+        _consultas = await ConsultaService.GetProximasConsultas();
+    }
+
+    private async Task AddConsulta()
+    {
+        var dialog = await DialogService.ShowAsync<AddConsultaDialog>("Nueva Consulta");
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            await LoadConsultas();
+        }
+    }
+}

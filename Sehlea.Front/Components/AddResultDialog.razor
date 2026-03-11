@@ -1,0 +1,45 @@
+@using Sehlea.Front.Models
+@using Sehlea.Front.Services
+@using MudBlazor
+@inject IResultadoService ResultadoService
+@inject ISnackbar Snackbar
+
+<MudDialog Style="width: 450px;">
+    <DialogContent>
+        <MudSelect T="CamposEstudioMedico" Label="Tipo de Resultado" @bind-Value="resultado.NombreDelCampo" Class="mb-4 mt-2">
+            @foreach (CamposEstudioMedico item in Enum.GetValues(typeof(CamposEstudioMedico)))
+            {
+                <MudSelectItem Value="@item">@item</MudSelectItem>
+            }
+        </MudSelect>
+        <MudNumericField Label="Valor Encontrado" @bind-Value="resultado.ValorEncontrado" Format="N2" Class="mb-4 mt-2" />
+        <MudNumericField Label="Rango Mínimo" @bind-Value="resultado.RangoValorMinimo" Format="N2" Class="mb-4 mt-2" />
+        <MudNumericField Label="Rango Máximo" @bind-Value="resultado.RangoValorMaximo" Format="N2" Class="mb-4 mt-2" />
+        <MudTextField Label="Comentario" @bind-Value="resultado.Comentario" Lines="3" Class="mb-4 mt-2" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Guardar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public int EstudioId { get; set; }
+
+    private ResultadoEstudioDTO resultado = new();
+
+    protected override void OnInitialized()
+    {
+        resultado.EstudioId = EstudioId;
+    }
+
+    void Cancel() => MudDialog.Cancel();
+
+    async Task Submit()
+    {
+        var res = await ResultadoService.AddResultado(resultado);
+        Snackbar.Add(res, Severity.Success);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}

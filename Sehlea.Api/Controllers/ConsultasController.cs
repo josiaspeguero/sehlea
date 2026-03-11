@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sehlea.Api.Application.DTOs;
 using Sehlea.Api.Application.UseCase;
+using Sehlea.Api.Domain.Entities;
 
 namespace Sehlea.Api.Controllers
 {
@@ -11,11 +12,20 @@ namespace Sehlea.Api.Controllers
     {
         private readonly AgregarConsulta _agregarConsulta;
         private readonly BuscarConsulta _buscarConsulta;
+        private readonly ObtenerProximasConsultas _obtenerProximasConsultas;
 
-        public ConsultasController(AgregarConsulta agregarConsulta, BuscarConsulta buscarConsulta)
+        public ConsultasController(AgregarConsulta agregarConsulta, BuscarConsulta buscarConsulta, ObtenerProximasConsultas obtenerProximasConsultas)
         {
             _agregarConsulta = agregarConsulta;
             _buscarConsulta = buscarConsulta;
+            _obtenerProximasConsultas = obtenerProximasConsultas;
+        }
+
+        [HttpGet("upcoming")]
+        public async Task<ActionResult<List<Consulta>>> ObtenerProximasConsultas()
+        {
+            var res = await _obtenerProximasConsultas.Execute();
+            return Ok(res);
         }
 
         [HttpPost("create")]

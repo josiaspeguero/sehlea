@@ -1,0 +1,137 @@
+@page "/estudios/{Id:int}"
+@using Sehlea.Front.Components
+@inject IEstudioService EstudioService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4 px-8">
+    <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" Variant="Variant.Text" OnClick="@(() => NavigationManager.NavigateTo("/estudios"))">VOLVER A LA LISTA</MudButton>
+    
+    @if (estudio == null)
+    {
+        @if (isLoading)
+        {
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Class="d-block mx-auto mt-4" />
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Error" Class="mt-4">No se encontró el estudio solicitado.</MudAlert>
+        }
+    }
+    else
+    {
+        <MudText Typo="Typo.h4" Class="mt-2 mb-4">Detalle de Estudio Médico</MudText>
+
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudPaper Elevation="2" Class="pa-4 rounded-lg">
+                    <MudText Typo="Typo.subtitle2" Color="Color.Secondary" Class="mb-2" Style="font-weight:bold;">Información General</MudText>
+                    <MudDivider Class="mb-4" />
+                    <MudText Class="mb-1"><strong>ID Estudio:</strong> #@estudio.Id</MudText>
+                    <MudText Class="mb-1"><strong>Fecha:</strong> @estudio.FechaEstudio.ToShortDateString()</MudText>
+                    <MudText Class="mb-1"><strong>Tipo:</strong> @estudio.Tipo</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudPaper Elevation="2" Class="pa-4 rounded-lg">
+                    <MudText Typo="Typo.subtitle2" Color="Color.Secondary" Class="mb-2" Style="font-weight:bold;">Paciente</MudText>
+                    <MudDivider Class="mb-4" />
+                    <MudText Class="mb-1"><strong>ID Paciente:</strong> @estudio.PacienteId</MudText>
+                    <MudText Class="mb-3"><strong>Observaciones:</strong> @(string.IsNullOrEmpty(estudio.Observaciones) ? "Ninguna" : estudio.Observaciones)</MudText>
+                    <div>
+                         <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="AddResult" Class="mt-2">AGREGAR RESULTADO</MudButton>
+                    </div>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+        <MudPaper Elevation="3" Class="mt-6 pa-0 rounded-lg overflow-hidden" Style="border: 1px solid #e0e0e0;">
+            <div class="pa-4 d-flex justify-space-between align-center" style="background-color: #f5f5f5; border-bottom: 1px solid #e0e0e0;">
+                <MudText Typo="Typo.h5" Color="Color.Primary">Resultados del Análisis</MudText>
+                <MudChip T="string" Color="Color.Info" Variant="Variant.Outlined" Size="Size.Small" Class="mr-0">@estudio.ResultadosEstudios.Count resultados</MudChip>
+            </div>
+            
+             @if (estudio.ResultadosEstudios != null && estudio.ResultadosEstudios.Any())
+            {
+                <MudTable Items="@estudio.ResultadosEstudios" Dense="true" Hover="true" Bordered="false" Striped="true" Elevation="0" Class="pa-4">
+                    <HeaderContent>
+                        <MudTh Style="font-weight:bold; background-color:#eeeeee; color:#424242;">Examen</MudTh>
+                        <MudTh Style="font-weight:bold; background-color:#eeeeee; color:#424242;">Resultado</MudTh>
+                        <MudTh Style="font-weight:bold; background-color:#eeeeee; color:#424242;">Unidad/Referencia</MudTh>
+                        <MudTh Style="font-weight:bold; background-color:#eeeeee; color:#424242;">Comentarios</MudTh>
+                    </HeaderContent>
+                    <RowTemplate Context="resultado">
+                        <MudTd DataLabel="Examen" Class="py-3"><strong>@resultado.NombreDelCampo</strong></MudTd>
+                        <MudTd DataLabel="Resultado" Class="py-3">
+                            <MudText Color="@(resultado.ValorEncontrado < resultado.RangoValorMinimo || resultado.ValorEncontrado > resultado.RangoValorMaximo ? Color.Error : Color.Inherit)" Typo="Typo.subtitle1" Style="font-weight: bold;">
+                                @resultado.ValorEncontrado
+                            </MudText>
+                        </MudTd>
+                        <MudTd DataLabel="Referencia" Class="py-3">
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@resultado.RangoValorMinimo - @resultado.RangoValorMaximo</MudText>
+                        </MudTd>
+                        <MudTd DataLabel="Comentarios" Class="py-3">
+                            @if (!string.IsNullOrEmpty(resultado.Comentario))
+                            {
+                                <MudText Typo="Typo.body2">@resultado.Comentario</MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.caption" Color="Color.Default">-</MudText>
+                            }
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            }
+            else
+            {
+                <div class="pa-6 text-center">
+                    <MudText Color="Color.Secondary">No hay resultados registrados para este estudio.</MudText>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="AddResult" Class="mt-2">Comenzar a agregar</MudButton>
+                </div>
+            }
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private EstudioMedicoDTO? estudio;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEstudio();
+    }
+
+    private async Task LoadEstudio()
+    {
+        isLoading = true;
+        try
+        {
+            estudio = await EstudioService.GetEstudioById(Id);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al cargar el estudio: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task AddResult()
+    {
+        if (estudio == null) return;
+        var parameters = new DialogParameters { ["EstudioId"] = estudio.Id };
+        var dialog = await DialogService.ShowAsync<AddResultDialog>("Agregar Resultado", parameters);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            await LoadEstudio();
+        }
+    }
+}

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Sehlea.Api.Application.DTOs;
 using Sehlea.Api.Domain.Entities;
 using Sehlea.Api.Domain.Interfaces;
@@ -31,6 +31,14 @@ namespace Sehlea.Api.Domain.Repositories
                 PacienteId = c.PacienteId,
                 PrecioConsulta = c.PrecioConsulta
             }).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Consulta>> ObtenerProximasConsultasAsync()
+        {
+            return await _appDbContext.Consultas
+                .Where(c => c.FechaConsulta >= DateTime.Now)
+                .OrderBy(c => c.FechaConsulta)
+                .ToListAsync();
         }
 
         public async Task<bool> GuardarConsultaAsync()

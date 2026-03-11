@@ -1,0 +1,117 @@
+@page "/estudios"
+@using Sehlea.Front.Components
+@inject IEstudioService EstudioService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<MudText Typo="Typo.h4" GutterBottom="true">Estudios Médicos</MudText>
+
+<MudTable Items="@_estudios" Dense="true" Hover="true" Bordered="true" Striped="true" Filter="new Func<EstudioMedicoDTO,bool>(FilterFunc1)" RowsPerPage="10">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Lista de Estudios</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString1" Placeholder="Buscar por Cédula o Tipo" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0 mr-3"></MudTextField>
+        <MudMenu Icon="@Icons.Material.Filled.FilterList" Color="Color.Primary" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+             <MudMenuItem OnClick="@(() => FilterByDate(0))">Todos</MudMenuItem>
+             <MudMenuItem OnClick="@(() => FilterByDate(1))">Último Mes</MudMenuItem>
+             <MudMenuItem OnClick="@(() => FilterByDate(3))">Últimos 3 Meses</MudMenuItem>
+        </MudMenu>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>ID</MudTh>
+        <MudTh>Tipo</MudTh>
+        <MudTh>Fecha</MudTh>
+        <MudTh>Observaciones</MudTh>
+        <MudTh>Paciente ID</MudTh>
+        <MudTh>Acciones</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="ID">@context.Id</MudTd>
+        <MudTd DataLabel="Tipo">@context.Tipo</MudTd>
+        <MudTd DataLabel="Fecha">@context.FechaEstudio.ToShortDateString()</MudTd>
+        <MudTd DataLabel="Observaciones">@context.Observaciones</MudTd>
+        <MudTd DataLabel="Paciente ID">@context.PacienteId</MudTd>
+        <MudTd>
+            <MudButton Variant="Variant.Outlined" Size="Size.Small" Color="Color.Primary" OnClick="@(() => GoToDetails(context.Id))">Ver Resultados</MudButton>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[]{10, 25, 50, 100}" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private List<EstudioMedicoDTO> _estudios = new();
+    private List<EstudioMedicoDTO> _allEstudios = new();
+    private string searchString1 = "";
+    private int filterMonths = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEstudios();
+    }
+
+    private void GoToDetails(int id)
+    {
+        NavigationManager.NavigateTo($"/estudios/{id}");
+    }
+
+    private async Task LoadEstudios()
+    {
+        try
+        {
+            _allEstudios = await EstudioService.GetAllEstudios();
+            ApplyFilter();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al cargar estudios: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void FilterByDate(int months)
+    {
+        filterMonths = months;
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        if (filterMonths == 0)
+        {
+            _estudios = _allEstudios;
+        }
+        else
+        {
+            var dateLimit = DateTime.Now.AddMonths(-filterMonths);
+            _estudios = _allEstudios.Where(e => e.FechaEstudio >= dateLimit).ToList();
+        }
+    }
+
+    private bool FilterFunc1(EstudioMedicoDTO element) => FilterFunc(element, searchString1);
+
+    private bool FilterFunc(EstudioMedicoDTO element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Observaciones != null && element.Observaciones.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Tipo.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        // Asumiendo que queremos buscar por ID de paciente o cedula si la tuviéramos en el DTO, por ahora solo campos disponibles
+        return false;
+    }
+
+    private async Task AddResult(EstudioMedicoDTO estudio)
+    {
+        var parameters = new DialogParameters { ["EstudioId"] = estudio.Id };
+        var dialog = await DialogService.ShowAsync<AddResultDialog>("Agregar Resultado", parameters);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled)
+        {
+            await LoadEstudios();
+        }
+    }
+}

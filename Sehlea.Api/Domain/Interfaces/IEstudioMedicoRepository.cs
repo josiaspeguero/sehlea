@@ -1,4 +1,4 @@
-﻿using Sehlea.Api.Domain.Entities;
+using Sehlea.Api.Domain.Entities;
 
 namespace Sehlea.Api.Domain.Interfaces
 {
@@ -7,5 +7,7 @@ namespace Sehlea.Api.Domain.Interfaces
         Task AgregarEstudioMedicoAsync(EstudioMedico estudioMedico);
         Task<bool> GuardarEstudioMedicoAsync();
         Task<EstudioMedico?> BuscarEstudioMedicoAsync(string cedula); //se buscara por cedula del paciente
+        Task<EstudioMedico?> BuscarEstudioPorIdAsync(int id);
+        Task<IEnumerable<EstudioMedico>> GetAllEstudiosAsync();
     }
 }

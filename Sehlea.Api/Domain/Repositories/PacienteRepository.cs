@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Sehlea.Api.Application.DTOs;
 using Sehlea.Api.Domain.Entities;
 using Sehlea.Api.Domain.Interfaces;
@@ -38,6 +38,7 @@ namespace Sehlea.Api.Domain.Repositories
         {
             var pacientes = await _appDbContext.Pacientes.Select(p => new PacienteDTO
             {
+                Id = p.Id,
                 Nombre = p.Nombre,
                 Apellido = p.Apellido,
                 Email = p.Email,

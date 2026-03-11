@@ -1,0 +1,52 @@
+@using Sehlea.Front.Models
+@using Sehlea.Front.Services
+@using MudBlazor
+@inject IConsultaService ConsultaService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudSelect T="TiposConsulta" Label="Tipo de Consulta" @bind-Value="consulta.Tipo">
+             @foreach (TiposConsulta item in Enum.GetValues(typeof(TiposConsulta)))
+            {
+                <MudSelectItem Value="@item">@item</MudSelectItem>
+            }
+        </MudSelect>
+        <MudTextField Label="Razón Consulta" @bind-Value="consulta.RazonConsulta" />
+        <MudTextField Label="Observaciones" @bind-Value="consulta.Observaciones" Lines="3" />
+        <MudDatePicker Label="Fecha Consulta" @bind-Date="date" />
+        <MudTimePicker Label="Hora Consulta" @bind-Time="time" />
+        <MudNumericField Label="Precio" @bind-Value="consulta.PrecioConsulta" Format="N2" />
+        <MudNumericField Label="Paciente ID" @bind-Value="consulta.PacienteId" />
+        <MudNumericField Label="Doctor ID" @bind-Value="consulta.DoctorId" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Guardar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    private ConsultaDTO consulta = new();
+    private DateTime? date = DateTime.Today;
+    private TimeSpan? time = DateTime.Now.TimeOfDay;
+
+    void Cancel() => MudDialog.Cancel();
+
+    async Task Submit()
+    {
+        if (date.HasValue && time.HasValue)
+        {
+            consulta.FechaConsulta = date.Value.Add(time.Value);
+        }
+        else
+        {
+            consulta.FechaConsulta = DateTime.Now;
+        }
+
+        var res = await ConsultaService.AddConsulta(consulta);
+        Snackbar.Add(res, Severity.Success);
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}

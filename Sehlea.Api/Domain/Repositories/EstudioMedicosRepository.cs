@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Sehlea.Api.Domain.Entities;
 using Sehlea.Api.Domain.Interfaces;
 using Sehlea.Api.Infrastructure.Persistence;
@@ -23,6 +23,23 @@ namespace Sehlea.Api.Domain.Repositories
             return await _appDbContext.EstudioMedicos
           .Include(e => e.ResultadosEstudios)
           .FirstOrDefaultAsync(e => e.Paciente.Cedula == cedula);
+        }
+
+        public async Task<EstudioMedico?> BuscarEstudioPorIdAsync(int id)
+        {
+            return await _appDbContext.EstudioMedicos
+                .Include(e => e.ResultadosEstudios)
+                .Include(e => e.Paciente)
+                .FirstOrDefaultAsync(e => e.Id == id);
+        }
+
+        public async Task<IEnumerable<EstudioMedico>> GetAllEstudiosAsync()
+        {
+            return await _appDbContext.EstudioMedicos
+                .Include(e => e.ResultadosEstudios)
+                .Include(e => e.Paciente)
+                .OrderByDescending(e => e.FechaEstudio)
+                .ToListAsync();
         }
 
         public async Task<bool> GuardarEstudioMedicoAsync()

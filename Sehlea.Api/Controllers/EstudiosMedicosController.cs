@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sehlea.Api.Application.DTOs;
 using Sehlea.Api.Application.UseCase;
@@ -11,12 +11,18 @@ namespace Sehlea.Api.Controllers
     {
         private readonly AgregarEstudioMedico _agregarEstudioMedico;
         private readonly ConsultarEstudioMedico _consultarEstudioMedico;
+        private readonly MostrarEstudios _mostrarEstudios;
+        private readonly BuscarEstudioPorId _buscarEstudioPorId;
 
         public EstudiosMedicosController(AgregarEstudioMedico agregarEstudioMedico,
-            ConsultarEstudioMedico consultarEstudioMedico)
+            ConsultarEstudioMedico consultarEstudioMedico,
+            MostrarEstudios mostrarEstudios,
+            BuscarEstudioPorId buscarEstudioPorId)
         {
             _agregarEstudioMedico = agregarEstudioMedico;
             _consultarEstudioMedico = consultarEstudioMedico;
+            _mostrarEstudios = mostrarEstudios;
+            _buscarEstudioPorId = buscarEstudioPorId;
         }
 
 
@@ -39,5 +45,19 @@ namespace Sehlea.Api.Controllers
             return Ok(res);
         }
 
+        [HttpGet("id/{id}")]
+        public async Task<ActionResult> BuscarEstudioPorId(int id)
+        {
+            var res = await _buscarEstudioPorId.ExecuteAsync(id);
+            if (res == null) return NotFound();
+            return Ok(res);
+        }
+
+        [HttpGet("view")]
+        public async Task<ActionResult> MostrarEstudios()
+        {
+            var res = await _mostrarEstudios.ExecuteAsync();
+            return Ok(res);
+        }
     }
 }
